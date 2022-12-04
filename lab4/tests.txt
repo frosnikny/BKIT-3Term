@@ -1,0 +1,2 @@
+pytest main.py
+radish test1.feature -b radish; radish test2.feature -b radish; radish test3.feature -b radish

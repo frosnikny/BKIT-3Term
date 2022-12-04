@@ -94,7 +94,8 @@ def main():
     elif len_roots == 3:
         print('Три корня: {}, {}, {}'.format(roots[0], roots[1], roots[2]))
     elif len_roots == 4:
-        print('Четыре корня: {}, {}, {}, {}'.format(roots[0], roots[1], roots[2], roots[3]))
+        print('Четыре корня: {}, {}, {}, {}'.format(
+            roots[0], roots[1], roots[2], roots[3]))
 
 
 # Если сценарий запущен из командной строки
