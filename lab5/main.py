@@ -1,56 +1,63 @@
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from random import randint
-
-from config import TOKEN_API
-
-bot = Bot(TOKEN_API)
-dp = Dispatcher(bot)
-
-kb = ReplyKeyboardMarkup(resize_keyboard=True)
-b1 = KeyboardButton('/help')
-b2 = KeyboardButton('/description')
-b3 = KeyboardButton('/photo')
-kb.add(b1).insert(b2).add(b3)
-
-HELP_COMMAND = """
-<b>/help</b> - <em>список команд</em>
-<b>/start</b> - <em>старт бота</em>
-<b>/description</b> - <em>описание бота</em>
-<b>/photo</b> - <em>отправка нашего фото</em>"""
+import math
+import pytest
 
 
-@dp.message_handler(commands=['help'])
-async def help_command(message: types.Message):
-    await bot.send_message(chat_id=message.from_user.id,
-                           text=HELP_COMMAND,
-                           parse_mode="HTML")
-    await message.delete()
+def get_roots(a, b, c):
+    '''
+    Вычисление корней квадратного уравнения
+    Args:
+        a (float): коэффициент А
+        b (float): коэффициент B
+        c (float): коэффициент C
+    Returns:
+        list[float]: Список корней
+    '''
+    result = []
+    D = b*b - 4*a*c
+    if D == 0.0:
+        root = -b / (2.0*a)
+        if root > 0:
+            root1 = math.sqrt(root)
+            root2 = -math.sqrt(root)
+            result.append(root1)
+            result.append(root2)
+        elif root == 0:
+            result.append(root)
+    elif D > 0.0:
+        sqD = math.sqrt(D)
+        first_root = (-b + sqD) / (2.0*a)
+        second_root = (-b - sqD) / (2.0*a)
+        if first_root > 0:
+            root1 = math.sqrt(first_root)
+            root2 = -math.sqrt(first_root)
+            result.append(root1)
+            result.append(root2)
+        elif first_root == 0:
+            result.append(first_root)
+        if second_root > 0:
+            root3 = math.sqrt(second_root)
+            root4 = -math.sqrt(second_root)
+            result.append(root3)
+            result.append(root4)
+        elif second_root == 0:
+            result.append(second_root)
+
+    return result
 
 
-@dp.message_handler(commands=['start'])
-async def start_command(message: types.Message):
-    await bot.send_message(chat_id=message.from_user.id,
-                           text="Добро пожаловать в наш бот!",
-                           parse_mode="HTML",
-                           reply_markup=kb)
-    await message.delete()
+class TestRoots:
+    def test_0roots(self):
+        assert len(get_roots(1, 0, 10)) == 0
 
+    def test_2roots(self):
+        a = get_roots(1, 0, -16)
+        assert (len(a) == 2) and (2 in a) and (-2 in a)
 
-@dp.message_handler(commands=['description'])
-async def desc_command(message: types.Message):
-    await bot.send_message(chat_id=message.from_user.id,
-                           text="Наш бот умеет отправлять фотографии котиков!",
-                           parse_mode="HTML")
-    await message.delete()
+    def test_3roots(self):
+        a = get_roots(-4, 16, 0)
+        assert (len(a) == 3) and (0 in a) and (2 in a) and (-2 in a)
 
-
-@dp.message_handler(commands=['photo'])
-async def photo_command(message: types.Message):
-    with open(f'photos/cat{randint(0, 9)}.jpg', 'rb') as photo:
-        await bot.send_photo(message.from_user.id,
-                             photo=photo)
-    await message.delete()
-
-if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    def test_4roots(self):
+        a = get_roots(1, -5, 6)
+        assert (len(a) == 4) and (math.sqrt(3) in a) and (math.sqrt(3) in a)\
+            and (math.sqrt(2) in a) and (-math.sqrt(2) in a)
